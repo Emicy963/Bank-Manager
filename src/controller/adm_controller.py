@@ -10,7 +10,16 @@ class Controller:
         salt = bcrypt.gensalt()
         password_hash = bcrypt.hashpw(password_bytes, salt)
         return password_hash
-
+    
+    def find_customer(self, bi:str)-> Customer | None:
+        for customer in self.customers:
+            if customer.bi == bi:
+                return customer
+        return None
+    
+    def read_customer(self):
+            return self.customers
+    
     def create_customer(
             self, name:str, password:str, bi:str, amount:int, living:str, age:int, job:str, status:bool)->Customer:
         if not name or not bi:
@@ -74,16 +83,6 @@ class Controller:
                 return True
         return False
 
-    
-    def read_customer(self):
-        return self.customers
-    
-    def find_customer(self, bi:str)-> Customer | None:
-        for customer in self.customers:
-            if customer.bi == bi:
-                return customer
-        return None
-    
     def delete_customer(self, bi:str)->bool:
         customer = self.find_customer(bi)
         if customer:
