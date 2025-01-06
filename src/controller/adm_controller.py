@@ -15,6 +15,8 @@ class Controller:
         for customer in self.customers:
             if customer.bi == bi:
                 return customer
+            else:
+                raise ValueError("User don't exist!")
         return None
     
     def read_customer(self):
