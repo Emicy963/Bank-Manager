@@ -19,11 +19,7 @@ class Controller:
                 raise ValueError("User don't exist!")
         return None
     
-    def read_customer(self):
-            return self.customers
-    
-    def create_customer(
-            self, name:str, password:str, bi:str, amount:int, living:str, age:int, job:str, status:bool)->Customer:
+    def name_bi_age_Erro(self, name:str, password:str, bi:str, amount:int, age:int) -> None:
         if not name or not bi:
             raise ValueError("Name and BI are required.")
         if age<0:
@@ -32,7 +28,7 @@ class Controller:
         if len(self.customers) != 0:
             for customer in self.customers:
                 if customer.bi == bi:
-                    raise ValueError("This BI already exist!")
+                    raise Exception("This BI already exist!")
                 
         if amount<10000:
             raise ValueError("Deposit must be greater than 10000Kzs")
@@ -42,7 +38,15 @@ class Controller:
             raise ValueError("Password must be at least one number.")
         if not any(c.isupper() for c in password):
             raise ValueError("Password must have at least one uppercase letter.")
+    
+    def read_customer(self):
+            return self.customers
+    
+    def create_customer(
+            self, name:str, password:str, bi:str, amount:int, 
+            living:str, age:int, job:str, status:bool)->Customer:
         
+        self.name_bi_age_Erro(name, password, bi, amount, age)
         pin = self.encrypt_password(password)
                 
         new_customer = Customer(name, pin, bi, amount, living, age, job, status)
