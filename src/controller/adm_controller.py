@@ -3,7 +3,7 @@ import bcrypt
 
 class Controller:
     def __init__(self):
-        self.customers = []
+        self._customers = []
 
     def encrypt_password(self, password:str): 
         password_bytes = password.encode("utf-8")
@@ -19,16 +19,15 @@ class Controller:
                 raise ValueError("User don't exist!")
         return None
     
-    def name_bi_age_Erro(self, name:str, password:str, bi:str, amount:int, age:int) -> None:
+    def validate_customer_data(self, name:str, password:str, bi:str, amount:int, age:int) -> None:
         if not name or not bi:
             raise ValueError("Name and BI are required.")
         if age<0:
             raise ValueError("Age cannot be negative.")
         
-        if len(self.customers) != 0:
-            for customer in self.customers:
-                if customer.bi == bi:
-                    raise Exception("This BI already exist!")
+        customer = self.find_customer(bi)
+        if customer:
+            raise ValueError("This BI already Exist!")
                 
         if amount<10000:
             raise ValueError("Deposit must be greater than 10000Kzs")
@@ -46,11 +45,11 @@ class Controller:
             self, name:str, password:str, bi:str, amount:int, 
             living:str, age:int, job:str, status:bool)->Customer:
         
-        self.name_bi_age_Erro(name, password, bi, amount, age)
-        pin = self.encrypt_password(password)
+        self.validate_customer_data(name, password, bi, amount, age)
+        encrypted_password = self.encrypt_password(password)
                 
-        new_customer = Customer(name, pin, bi, amount, living, age, job, status)
-        self.customers.append(new_customer)
+        new_customer = Customer(name, encrypted_password, bi, amount, living, age, job, status)
+        self._customers.append(new_customer)
         return new_customer
     
     def update_customer(
@@ -61,38 +60,43 @@ class Controller:
             amount:int=None, 
             living:str=None, 
             age:int=None, 
-            job:str=None)->bool:
+            job:str=None,
+            status:bool=None)->bool:
+        customer = self.find_customer(bi)
+        if not customer:
+            return False
         
-        for customer in self.customers:
-            if customer.bi == bi:
-                if name is not None:
-                    customer.name = name
-                if password is not None:
-                    if len(password) < 8:
-                        raise ValueError("Password must be at least 8 characters long.")
-                    if not any(c.isdigit() for c in password):
-                        raise ValueError("Password must be at least one number.")
-                    if not any(c.isupper() for c in password):
-                        raise ValueError("Password must have at least one uppercase letter.")
-                    pin = self.encrypt_password(password)
-                    customer.password = pin
-                if amount is not None:
-                    customer.amount = amount
-                if living is not None:
-                    customer.living = living
-                if age is not None:
-                    if age<0:
-                        raise ValueError("Age cannot be negative.")
-                    customer.age = age
-                if job is not None:
-                    customer.job = job
-                return True
-        return False
+        if name:
+            customer.name = name
+        if password:
+            if len(password) < 8:
+                raise ValueError("Password must be at least 8 characters long.")
+            if not any(c.isdigit() for c in password):
+                raise ValueError("Password must be at least one number.")
+            if not any(c.isupper() for c in password):
+                raise ValueError("Password must have at least one uppercase letter.")
+            customer.password = self.encrypt_password(password)
+        if amount is not None:
+            customer.amount = amount
+        if living is not None:
+            customer.living = living
+        if age is not None:
+            if age < 0:
+                raise ValueError("Age cannot be negative.")
+            customer.age = age
+        if job is not None:
+            customer.job = job
+        if status is not None:
+            customer.status = status
+
+        return True
 
     def delete_customer(self, bi:str)->bool:
         customer = self.find_customer(bi)
         if customer:
-            self.customers.append(customer)
+            self.customers.remove(customer)
             return True
         return False
         
+    def get_all_customers(self):
+        return self._customers
