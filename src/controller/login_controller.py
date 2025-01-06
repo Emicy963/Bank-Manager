@@ -19,7 +19,7 @@ class LoginController:
             return True
         return False
     
-    def get_loggerd_user(self) -> Customer | None:
+    def get_logged_user(self) -> Customer | None:
         return self._logged_user
 
     def logout(self) -> None:
