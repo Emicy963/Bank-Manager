@@ -2,22 +2,33 @@ import bcrypt
 from ..model.customer import Customer
 from adm_controller import Controller
 
-class Login(Controller):
-    def __init__(self) -> None:
-        super().__init__()
+class LoginController:
+    def __init__(self):
+        self._logged_user = None
         
-    def __verify_password(self, bi:str, password: str) -> bool:
-        customer = self.find_customer(bi)
+    def verify_password(self, bi:str, password: str) -> bool:
+        customer = Controller()
         if customer:
-            return bcrypt.checkpw(password.encode("utf-8"), customer.password)
+            return bcrypt.checkpw(password.encode("utf-8"), customer.find_customer(bi).password)
         return False
-    
-    def user_login(self, user:Customer) -> Customer | None:
-        return user
     
     def login(self, bi:str, password:str) -> bool:
-        customer = self.__verify_password(bi, password)
-        if customer:
-            self.user_login(self.find_customer(bi))
+        customer = Controller()
+        if self.verify_password(bi, password):
+            self._logged_user = customer.find_customer(bi)
             return True
         return False
+    
+    def get_loggerd_user(self) -> Customer | None:
+        return self._logged_user
+
+    def logout(self) -> None:
+        self._logged_user = None
+
+    def singIn(self, name: str, password: str, bi: str, 
+              amount: float, living: str, age: int, 
+              job: str, status: bool=False) -> bool:
+        new_customer = Controller()
+        new_customer.create_customer(name, password, bi, amount, living, age, job, status)
+        
+        self.login(bi, password)
