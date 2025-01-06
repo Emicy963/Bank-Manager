@@ -1,5 +1,5 @@
 class Customer:
-    def __init__(self, name:str, password:str, bi:str, amount:int, living:str, age:int, job:str, status:bool):
+    def __init__(self, name:str, password:bytes, bi:str, amount:int, living:str, age:int, job:str, status:bool)->None:
         self._name = name
         self._password = password
         self._bi = bi
@@ -17,7 +17,7 @@ class Customer:
         self._name = name
 
     @property
-    def password(self)->str:
+    def password(self)->bytes:
         return self._password
     @password.setter
     def password(self, password)->None:
