@@ -21,5 +21,5 @@ class LoginView(LoginController):
                         pass
                 else:
                     print("Just answer with Y/N!")
-        except(ValueError):
+        except ValueError:
             print(f"Erro: {ValueError}")
