@@ -24,6 +24,8 @@ class Controller:
             raise ValueError("Name and BI are required.")
         if age<0:
             raise ValueError("Age cannot be negative.")
+        if age<18:
+            raise ValueError("Your age must be greate than 18 years.")
         
         customer = self.find_customer(bi)
         if customer:
