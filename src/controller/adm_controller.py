@@ -12,7 +12,7 @@ class Controller:
         return password_hash
     
     def find_customer(self, bi:str)-> Customer | None:
-        for customer in self.customers:
+        for customer in self._customers:
             if customer.bi == bi:
                 return customer
             else:
@@ -39,9 +39,6 @@ class Controller:
             raise ValueError("Password must be at least one number.")
         if not any(c.isupper() for c in password):
             raise ValueError("Password must have at least one uppercase letter.")
-    
-    def read_customer(self):
-            return self.customers
     
     def create_customer(
             self, name:str, password:str, bi:str, amount:int, 
@@ -96,7 +93,7 @@ class Controller:
     def delete_customer(self, bi:str)->bool:
         customer = self.find_customer(bi)
         if customer:
-            self.customers.remove(customer)
+            self._customers.remove(customer)
             return True
         return False
         
