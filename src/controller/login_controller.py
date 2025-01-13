@@ -27,7 +27,7 @@ class LoginController:
 
     def singIn(self, name: str, password: str, bi: str, 
               amount: float, living: str, age: int, 
-              job: str, status: bool=False) -> bool:
+              job: str, status: bool=False):
         new_customer = Controller()
         new_customer.create_customer(name, password, bi, amount, living, age, job, status)
         
